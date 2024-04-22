@@ -1,0 +1,20 @@
+name: Build & deploy hokify challenge app
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build docker image
+        run: cd app && sudo docker build -t hokify.challenge.app -f Dockerfile ./
+
+      - name: Stop and remove old image
+        run: sudo docker stop hokify.challenge.app || true && sudo docker remove hokify.challenge.app || true
+
+      - name: Run new docker image
+        run: sudo docker run --name hokify.challenge.app -p 8080:8080 hokify.challenge.app &
